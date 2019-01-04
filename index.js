@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
 const atob = require('atob');
 const {http} = require('follow-redirects');
+const colors = require('css-color-names');
 const {drawShip} = require('./render.js');
 const {getStats} = require('./stats.js');
-const colors = require('css-color-names');
+const {token} = require('./token.json');
 
 var discord = new Discord.Client();
 discord.on('ready', () => {
@@ -87,4 +88,4 @@ var getHttp = (url, cb) => {
     }).on('error', e => cb(null));
 }
 
-discord.login('NTMwNTIwMDM2Njk2MzkxNzEw.DxAlMw.voGbqNo2QizLYCMst5dR2ytUJlc');
+discord.login(token);

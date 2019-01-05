@@ -73,7 +73,8 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
     ctx.globalCompositeOperation = "multiply";
     for(let i = 0; i < NxN; i++) {
         for(let j = 0; j < NxN; j++) {
-            drawImage("parts/sel1x1.png", i * SIZE, j * SIZE, SIZE * .8, SIZE * .8);
+            let size = SIZE * .8;
+            drawImage("parts/sel1x1.png", i * SIZE + size / 2, j * SIZE + size / 2, size, size);
         }
     }
 
@@ -123,7 +124,7 @@ var getImage = (file, flip = false, color, colorMode) => {
         let imageData = cCtx.getImageData(0, 0, w, h);
         let data = imageData.data;
         for(let i = 0; i < data.length; i += 4) {
-            // I have no idea what these called so I made them up
+            // I have no idea what these called so I made the name up
             if(colorMode === "color") {
                 data[i] = data[i] * color[0] / 255;
                 data[i+1] = data[i+1] * color[1] / 255;

@@ -75,12 +75,14 @@ var sendShipey = (channel, shipey, color) => {
     ];
 
     let weapDisplays = [
+        {name: "Mount", field: "mount", unit: "", fixed: 0},
         {name: "DPS", field: "dps", unit: "", fixed: 1},
         {name: "Damage", field: "damage", unit: "", fixed: 1},
         {name: "E-Drain", field: "energyDamage", unit: "e", fixed: 1},
         {name: "Range", field: "range", unit: "m", fixed: 1},
         {name: "Speed", field: "weaponSpeed", unit: "m/s", fixed: 1},
         {name: "Reload", field: "repladTime", unit: "s", fixed: 1},
+        {name: "Arc", field: "arc", unit: "°", fixed: 0},
         {name: "E-Use", field: "shotEnergy", unit: "e", fixed: 0},
         {name: "EPS", field: "fireEnergy", unit: "e/s", fixed: 1}
     ];
@@ -116,9 +118,9 @@ var sendShipey = (channel, shipey, color) => {
             }
         }
 
-        let added = msgs.filter(m => m.title === w.type && m.text === msg);
+        let added = msgs.filter(m => m.title === w.name && m.text === msg);
         if(added.length <= 0)
-            msgs.push({title: w.type, text: msg, count: 1});
+            msgs.push({title: w.name, text: msg, count: 1});
         else
             added[0].count += 1;
     }

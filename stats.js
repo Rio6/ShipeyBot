@@ -35,6 +35,7 @@ var getStats = module.exports.getStats = (spec) => {
         if(data.damage) {
             stats.weapons.push({
                 type: p.type,
+                name: parts[p.type].name,
                 pos: p.pos,
                 damage: data.damage,
                 dps: 0,
@@ -87,6 +88,11 @@ var getStats = module.exports.getStats = (spec) => {
             w.weaponSpeed += (data.weaponSpeed || 0) / 100 * effect;
             w.weaponReload *= 1 + (data.weaponReload || 0) / 100 * effect;
             w.weaponEnergy *= 1 + (data.weaponEnergy || 0) / 100 * effect;
+
+            if(p.type.startsWith("Mount")) {
+                w.mount = parts[p.type].name;
+                w.arc = parts[p.type].arc;
+            }
         }
     }
 

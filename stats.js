@@ -14,6 +14,7 @@ var getStats = module.exports.getStats = (spec) => {
         jumpCount: 0,
         center: [0, 0],
         radius: 0,
+        dps: 0,
         weapons: []
     };
 
@@ -99,11 +100,15 @@ var getStats = module.exports.getStats = (spec) => {
 
         w.fireEnergy = w.shotEnergy / w.reloadTime
         w.dps = w.damage / w.reloadTime
+
+        stats.dps += w.dps;
     }
 
     stats.speed = (stats.thrust / stats.mass * 9 * 16);
     stats.jumpDistance = (Math.min(1, 41 * stats.jumpCount / stats.mass) * 500);
     stats.turnSpeed = stats.turnSpeed / stats.mass * 16 * 180 / Math.PI;
+    stats.genEnergy *= 16;
+    stats.genShield *= 16;
 
     return stats;
 }

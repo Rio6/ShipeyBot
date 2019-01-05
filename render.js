@@ -1,4 +1,4 @@
-const {createCanvas, loadImage} = require('canvas');
+const Canvas = require('canvas');
 const parts = require('./parts.json');
 const {size, mappings} = require('./atlas.json'), atlasSize = size;
 
@@ -7,10 +7,10 @@ var SIZE = 20;
 
 var atlas = null;
 
-var canvas = createCanvas(NxN * SIZE, NxN * SIZE);
+var canvas = Canvas.createCanvas(NxN * SIZE, NxN * SIZE);
 var ctx = canvas.getContext('2d');
 
-loadImage("atlas.png").then((image) => atlas = image);
+Canvas.loadImage("atlas.png").then((image) => atlas = image);
 
 var drawImage = (file, x, y, w = SIZE, h = SIZE, dir = 0, flip = false, color, colorMode) => {
     if(!atlas) {
@@ -107,7 +107,7 @@ var getImage = (file, flip = false, color, colorMode) => {
     let w = x1 - x;
     let h = y1 - y;
 
-    let cCanvas = createCanvas(w, h);
+    let cCanvas = Canvas.createCanvas(w, h);
     let cCtx = cCanvas.getContext('2d');
 
     if(flip)

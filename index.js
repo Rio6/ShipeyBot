@@ -57,8 +57,23 @@ var sendShipey = (channel, shipey, color) => {
     }
 
     let stats = getStats(spec);
+    let embed = new Discord.RichEmbed().setColor(color);
+    embed.addField("Cost", "$" + stats.cost, true);
+    embed.addField("HP", stats.hp, true);
+    embed.addField("Mass", stats.mass + "t", true);
+    embed.addField("DPS", stats.dps.toFixed(1) + "dmg/s", true);
+    embed.addField("Speed", stats.speed.toFixed(1) + "m/s", true);
+    embed.addField("Turn", stats.turnSpeed.toFixed(1) + "°/s", true);
+    embed.addField("E-Gen", stats.genEnergy.toFixed(1) + "e/s", true);
+    embed.addField("E-Store", stats.storeEnergy + "e", true);
+    embed.addField("Shield", stats.shield + "sh", true);
+    embed.addField("Shield Gen", stats.genShield + "sh/s", true);
+    embed.addField("Radius", stats.radius.toFixed(1) + "m", true);
+    embed.addField("Jump Distance", stats.jumpDistance.toFixed(0) + "m", true);
+
     let img = drawShip(spec, stats, color);
-    channel.send(JSON.stringify(stats).slice(0, 2000), {file: img});
+
+    channel.send({file: img, embed: embed});
 }
 
 var getHttp = (url, cb) => {

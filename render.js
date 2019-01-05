@@ -129,9 +129,9 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255]) 
         let data = imageData.data;
         for(let i = 0; i < data.length; i += 4) {
             if(255 * 3 - (data[i] + data[i+1] + data[i+2]) < 200) {
-                data[i] = data[i] / 255 * color[0];
-                data[i+1] = data[i+1] / 255 * color[1];
-                data[i+2] = data[i+2] / 255 * color[2];
+                data[i] = (data[i] + color[0]) / 2;
+                data[i+1] = (data[i+1] + color[1]) / 2;
+                data[i+2] = (data[i+2] + color[2]) / 2;
                 data[i+3] = 255;
             }
         }

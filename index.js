@@ -56,20 +56,83 @@ var sendShipey = (channel, shipey, color) => {
         return;
     }
 
+    let displays = [
+        {name: "Name", field: "name", unit: "", fixed: 0},
+        {name: "Cost", field: "cost", unit: "", fixed: 0},
+        {name: "HP", field: "hp", unit: "", fixed: 0},
+        {name: "Mass", field: "mass", unit: "t", fixed: 1},
+        {name: "DPS", field: "dps", unit: "", fixed: 1},
+        {name: "Damage", field: "damage", unit: "", fixed: 1},
+        {name: "Range", field: "range", unit: "m", fixed: 1},
+        {name: "Speed", field: "speed", unit: "m/s", fixed: 1},
+        {name: "Turn", field: "turnSpeed", unit: "°/s", fixed: 1},
+        {name: "E-Gen", field: "genEnergy", unit: "e/s", fixed: 1},
+        {name: "E-Store", field: "storeEnergy", unit: "e", fixed: 1},
+        {name: "Shield", field: "shield", unit: "sh", fixed: 0},
+        {name: "Shield Gen", field: "genShield", unit: "sh/s", fixed: 0},
+        {name: "Radius", field: "radius", unit: "m", fixed: 1},
+        {name: "Jump Distance", field: "jumpDistance", unit: "m", fixed: 1}
+    ];
+
+    let weapDisplays = [
+        {name: "DPS", field: "dps", unit: "", fixed: 1},
+        {name: "Damage", field: "damage", unit: "", fixed: 1},
+        {name: "E-Drain", field: "energyDamage", unit: "e", fixed: 1},
+        {name: "Range", field: "range", unit: "m", fixed: 1},
+        {name: "Speed", field: "weaponSpeed", unit: "m/s", fixed: 1},
+        {name: "Reload", field: "repladTime", unit: "s", fixed: 1},
+        {name: "E-Use", field: "shotEnergy", unit: "e", fixed: 0},
+        {name: "EPS", field: "fireEnergy", unit: "e/s", fixed: 1}
+    ];
+
     let stats = getStats(spec);
     let embed = new Discord.RichEmbed().setColor(color);
-    embed.addField("Cost", "$" + stats.cost, true);
-    embed.addField("HP", stats.hp, true);
-    embed.addField("Mass", stats.mass + "t", true);
-    embed.addField("DPS", stats.dps.toFixed(1) + "dmg/s", true);
-    embed.addField("Speed", stats.speed.toFixed(1) + "m/s", true);
-    embed.addField("Turn", stats.turnSpeed.toFixed(1) + "°/s", true);
-    embed.addField("E-Gen", stats.genEnergy.toFixed(1) + "e/s", true);
-    embed.addField("E-Store", stats.storeEnergy + "e", true);
-    embed.addField("Shield", stats.shield + "sh", true);
-    embed.addField("Shield Gen", stats.genShield + "sh/s", true);
-    embed.addField("Radius", stats.radius.toFixed(1) + "m", true);
-    embed.addField("Jump Distance", stats.jumpDistance.toFixed(0) + "m", true);
+
+    let fieldCount = 0;
+    for(let d of displays) {
+        if(fieldCount >= 24) {
+            embed.addField("More", "...", false);
+            break;
+        }
+
+        let v = stats[d.field];
+        if(typeof v === "number") v = v.toFixed(d.fixed);
+        if(v && stats[d.field] !== 0) {
+            embed.addField(d.name, v + d.unit, true);
+            fieldCount++;
+        }
+    }
+
+    let msgs = [];
+    for(let i in stats.weapons) {
+        let msg = "";
+        let w = stats.weapons[i];
+
+        for(let d of weapDisplays) {
+            let v = w[d.field];
+            if(v && w[d.field] !== 0) {
+                if(typeof v === "number") v = v.toFixed(d.fixed);
+                msg += "**" + d.name + "**: " + v + d.unit + "\n";
+            }
+        }
+
+        let added = msgs.filter(m => m.title === w.type && m.text === msg);
+        if(added.length <= 0)
+            msgs.push({title: w.type, text: msg, count: 1});
+        else
+            added[0].count += 1;
+    }
+
+    for(let msg of msgs) {
+        if(fieldCount >= 24) {
+            if(fieldCount < 25)
+                embed.addField("More", "...", false);
+            break;
+        }
+
+        embed.addField(msg.title + " x" + msg.count, msg.text, true);
+        fieldCount++;
+    }
 
     let img = drawShip(spec, stats, color);
 
@@ -80,27 +143,27 @@ var getHttp = (url, cb) => {
 
     [host, path] = url.replace(/^http[s]*:\/\//i, "").split(/\/(.+)/);
 
-    if(host === "pastebin.com" && path.match(/[a-zA-Z0-9]{8}/)) {
-        path = "raw/" + path;
-    } else if(host === "gist.github.com" && path.match(/[a-zA-Z0-9]+\/[a-z0-9]{32}/)) {
-        host = "gist.githubusercontent.com";
-        path += "/raw";
-    }
+        if(host === "pastebin.com" && path.match(/[a-zA-Z0-9]{8}/)) {
+            path = "raw/" + path;
+        } else if(host === "gist.github.com" && path.match(/[a-zA-Z0-9]+\/[a-z0-9]{32}/)) {
+            host = "gist.githubusercontent.com";
+            path += "/raw";
+        }
 
-    http.get({
-        host: host,
-        path: "/" + path
-    }, function(res) {
-        var body = "";
+        http.get({
+            host: host,
+            path: "/" + path
+        }, function(res) {
+            var body = "";
 
-        res.on('data', function(d) {
-            body += d;
-        });
+            res.on('data', function(d) {
+                body += d;
+            });
 
-        res.on('end', function() {
-            if(cb) cb(body);
-        });
-    }).on('error', e => cb(null));
+            res.on('end', function() {
+                if(cb) cb(body);
+            });
+        }).on('error', e => cb(null));
 }
 
 discord.login(token);

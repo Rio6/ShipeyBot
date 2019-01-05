@@ -15,6 +15,8 @@ var getStats = module.exports.getStats = (spec) => {
         center: [0, 0],
         radius: 0,
         dps: 0,
+        damage: 0,
+        range: 0,
         weapons: []
     };
 
@@ -35,11 +37,13 @@ var getStats = module.exports.getStats = (spec) => {
                 type: p.type,
                 pos: p.pos,
                 damage: data.damage,
+                dps: 0,
                 energyDamage: data.energyDamage,
                 range: data.range,
                 reloadTime: data.reloadTime,
                 bulletSpeed: data.bulletSpeed,
                 shotEnergy: data.shotEnergy,
+                fireEnergy: 0,
                 weaponRange: data.weaponRange,
                 weaponRangeFlat: data.weaponRangeFlat,
                 weaponDamage: data.weaponDamage,
@@ -86,6 +90,8 @@ var getStats = module.exports.getStats = (spec) => {
         }
     }
 
+    stats.range = 0;
+
     for(let w of stats.weapons) {
 
         w.range *= w.weaponRange;
@@ -102,6 +108,8 @@ var getStats = module.exports.getStats = (spec) => {
         w.dps = w.damage / w.reloadTime
 
         stats.dps += w.dps;
+        stats.damage += w.damage;
+        stats.range = Math.max(w.range, stats.range);
     }
 
     stats.speed = (stats.thrust / stats.mass * 9 * 16);
@@ -109,6 +117,7 @@ var getStats = module.exports.getStats = (spec) => {
     stats.turnSpeed = stats.turnSpeed / stats.mass * 16 * 180 / Math.PI;
     stats.genEnergy *= 16;
     stats.genShield *= 16;
+    stats.name = spec.name;
 
     return stats;
 }

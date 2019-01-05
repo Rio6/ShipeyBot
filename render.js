@@ -2,12 +2,13 @@ const Canvas = require('canvas');
 const parts = require('./parts.json');
 const {size, mappings} = require('./atlas.json'), atlasSize = size;
 
-var NxN = 24;
-var SIZE = 20;
+const NxN = 24;
+const SIZE = 20;
+const MARGIN = 80;
 
 var atlas = null;
 
-var canvas = Canvas.createCanvas(NxN * SIZE, NxN * SIZE);
+var canvas = Canvas.createCanvas(NxN * SIZE + MARGIN, NxN * SIZE + MARGIN);
 var ctx = canvas.getContext('2d');
 
 Canvas.loadImage("atlas.png").then((image) => atlas = image);
@@ -65,15 +66,16 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#73C1E2";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.translate(MARGIN / 2, MARGIN / 2);
+    ctx.globalCompositeOperation = "multiply";
     for(let i = 0; i < NxN; i++) {
         for(let j = 0; j < NxN; j++) {
             drawImage("parts/sel1x1.png", i * SIZE, j * SIZE, SIZE * .8, SIZE * .8);
         }
     }
-
-    ctx.globalCompositeOperation = "multiply";
-    ctx.fillStyle = "#73C1E2";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.globalCompositeOperation = "source-over";
 
@@ -87,6 +89,8 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
     for(let part of spec.parts) {
         drawPart(part.type, part.pos[0], part.pos[1], part.dir, color);
     }
+
+    ctx.translate(-MARGIN / 2, -MARGIN / 2);
 
     //require("child_process").spawn("firefox", [canvas.toDataURL()]);
     return canvas.toBuffer("image/png");

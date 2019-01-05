@@ -20,7 +20,7 @@ discord.on('error', e => console.error("Discord error"));
 discord.on('message', msg => {
     let cmd = msg.content.split(/ +/);
     if(cmd[0] === "!shipey") {
-        if(cmd.length <= 2) {
+        if(cmd.length < 2) {
             msg.channel.send("Usage: !shipey [color] <shipey | pastebin url | gist url>");
             return;
         }

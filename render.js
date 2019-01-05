@@ -74,7 +74,8 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
     for(let i = 0; i < NxN; i++) {
         for(let j = 0; j < NxN; j++) {
             let size = SIZE * .8;
-            drawImage("parts/sel1x1.png", i * SIZE + size / 2, j * SIZE + size / 2, size, size);
+            let offset = SIZE * .1;
+            drawImage("parts/sel1x1.png", i * SIZE + offset, j * SIZE + offset, size, size);
         }
     }
 

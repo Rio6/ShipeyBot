@@ -17,6 +17,10 @@ var getStats = module.exports.getStats = (spec) => {
         dps: 0,
         damage: 0,
         range: 0,
+        moveEnergy: 0,
+        shotEnergy: 0,
+        otherEnergy: 0,
+        allEnergy: 0,
         weapons: []
     };
 
@@ -32,7 +36,9 @@ var getStats = module.exports.getStats = (spec) => {
             }
         }
 
-        if(data.damage) {
+        if(p.type.startsWith("Engine"))
+            stats.moveEnergy += data.useEnergy;
+        else if(data.damage && !data.explodes) { // Is a weapon
             stats.weapons.push({
                 type: p.type,
                 name: parts[p.type].name,
@@ -52,6 +58,8 @@ var getStats = module.exports.getStats = (spec) => {
                 weaponReload: data.weaponReload,
                 weaponEnergy: data.weaponEnergy
             });
+        } else if(data.useEnergy) {
+            stats.otherEnergy += data.useEnergy;
         }
 
         ix += data.mass * p.pos[0];
@@ -97,6 +105,7 @@ var getStats = module.exports.getStats = (spec) => {
     }
 
     stats.range = 0;
+    stats.shotEnergy = 0;
 
     for(let w of stats.weapons) {
 
@@ -116,6 +125,7 @@ var getStats = module.exports.getStats = (spec) => {
         stats.dps += w.dps;
         stats.damage += w.damage;
         stats.range = Math.max(w.range, stats.range);
+        stats.shotEnergy += w.shotEnergy;
     }
 
     stats.speed = (stats.thrust / stats.mass * 9 * 16);
@@ -124,6 +134,9 @@ var getStats = module.exports.getStats = (spec) => {
     stats.genEnergy *= 16;
     stats.genShield *= 16;
     stats.name = spec.name;
+    stats.moveEnergy *= 16;
+    stats.otherEnergy *= 16;
+    stats.allEnergy = stats.shotEnergy + stats.moveEnergy + stats.otherEnergy;
 
     return stats;
 }

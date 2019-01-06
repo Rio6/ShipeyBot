@@ -66,8 +66,12 @@ var sendShipey = (channel, shipey, color) => {
         {name: "Range", field: "range", unit: "m", fixed: 1},
         {name: "Speed", field: "speed", unit: "m/s", fixed: 1},
         {name: "Turn", field: "turnSpeed", unit: "°/s", fixed: 1},
-        {name: "E-Gen", field: "genEnergy", unit: "e/s", fixed: 1},
-        {name: "E-Store", field: "storeEnergy", unit: "e", fixed: 1},
+        {name: "E-Gen", field: "genEnergy", unit: "e/s", fixed: 0},
+        {name: "E-Store", field: "storeEnergy", unit: "e", fixed: 0},
+        {name: "E-Use", field: "allEnergy", unit: "e", fixed: 0},
+        {name: "Movement E", field: "moveEnergy", unit: "e", fixed: 0},
+        {name: "Weapon E", field: "shotEnergy", unit: "e", fixed: 0},
+        {name: "Other E", field: "otherEnergy", unit: "e", fixed: 0},
         {name: "Shield", field: "shield", unit: "sh", fixed: 0},
         {name: "Shield Gen", field: "genShield", unit: "sh/s", fixed: 0},
         {name: "Radius", field: "radius", unit: "m", fixed: 1},
@@ -88,20 +92,18 @@ var sendShipey = (channel, shipey, color) => {
     ];
 
     let stats = getStats(spec);
-    let embed = new Discord.RichEmbed().setColor(color);
 
-    let fieldCount = 0;
+    let shipEmbed = new Discord.RichEmbed().setTitle("Stats").setColor(color);
     for(let d of displays) {
-        if(fieldCount >= 24) {
-            embed.addField("More", "...", false);
+        if(shipEmbed.fields.length >= 24) {
+            shipEmbed.addField("More", "...", false);
             break;
         }
 
         let v = stats[d.field];
         if(typeof v === "number") v = v.toFixed(d.fixed);
         if(v && stats[d.field] !== 0) {
-            embed.addField(d.name, v + d.unit, true);
-            fieldCount++;
+            shipEmbed.addField(d.name, v + d.unit, true);
         }
     }
 
@@ -125,20 +127,23 @@ var sendShipey = (channel, shipey, color) => {
             added[0].count += 1;
     }
 
+    let weapEmbed = new Discord.RichEmbed().setTitle("Weapons").setColor(color);
     for(let msg of msgs) {
-        if(fieldCount >= 24) {
-            if(fieldCount < 25)
-                embed.addField("More", "...", false);
+        if(weapEmbed.fields.length >= 24) {
+            weapEmbed.addField("More", "...", false);
             break;
         }
 
-        embed.addField(msg.title + " x" + msg.count, msg.text, true);
-        fieldCount++;
+        weapEmbed.addField(msg.title + " x" + msg.count, msg.text, true);
     }
 
     let img = drawShip(spec, stats, color);
 
-    channel.send({file: img, embed: embed});
+    channel.send({file: img}).then(() => {
+        channel.send({embed: shipEmbed});
+        if(weapEmbed.fields.length > 0)
+            channel.send({embed: weapEmbed});
+    });
 }
 
 var getHttp = (url, cb) => {

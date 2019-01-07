@@ -134,9 +134,10 @@ var getImage = (file, flip = false, color, colorMode) => {
             } else if(colorMode === "replace") {
                 if(data[i+1] === data[i+2] && data[i] > data[i+1]) {
                     let p = data[i] / (data[i] + data[i+1] + data[i+2]);
-                    data[i] = p * color[0] + (1-p) * data[i];
-                    data[i+1] = p * color[1] + (1-p) * data[i+1];
-                    data[i+2] = p * color[2] + (1-p) * data[i+2];
+                    let c = (1-p) * data[i+1];
+                    data[i] = p * color[0] + c;
+                    data[i+1] = p * color[1] + c;
+                    data[i+2] = p * color[2] + c;
                 }
             }
         }

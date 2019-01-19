@@ -18,7 +18,7 @@ var getStats = module.exports.getStats = (spec) => {
         damage: 0,
         range: 0,
         moveEnergy: 0,
-        shotEnergy: 0,
+        fireEnergy: 0,
         otherEnergy: 0,
         allEnergy: 0,
         weapons: []
@@ -105,7 +105,7 @@ var getStats = module.exports.getStats = (spec) => {
     }
 
     stats.range = 0;
-    stats.shotEnergy = 0;
+    stats.fireEnergy = 0;
 
     for(let w of stats.weapons) {
 
@@ -125,7 +125,7 @@ var getStats = module.exports.getStats = (spec) => {
         stats.dps += w.dps;
         stats.damage += w.damage;
         stats.range = Math.max(w.range, stats.range);
-        stats.shotEnergy += w.shotEnergy;
+        stats.fireEnergy += w.fireEnergy;
     }
 
     stats.speed = (stats.thrust / stats.mass * 9 * 16);
@@ -136,7 +136,8 @@ var getStats = module.exports.getStats = (spec) => {
     stats.name = spec.name;
     stats.moveEnergy *= 16;
     stats.otherEnergy *= 16;
-    stats.allEnergy = stats.shotEnergy + stats.moveEnergy + stats.otherEnergy;
+    stats.fireEnergy *= 16;
+    stats.allEnergy = stats.fireEnergy + stats.moveEnergy;// + stats.otherEnergy;
 
     return stats;
 }

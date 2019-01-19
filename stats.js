@@ -136,7 +136,6 @@ var getStats = module.exports.getStats = (spec) => {
     stats.name = spec.name;
     stats.moveEnergy *= 16;
     stats.otherEnergy *= 16;
-    stats.fireEnergy *= 16;
     stats.allEnergy = stats.fireEnergy + stats.moveEnergy;// + stats.otherEnergy;
 
     return stats;

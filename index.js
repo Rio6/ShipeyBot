@@ -19,9 +19,10 @@ discord.on('error', e => console.error("Discord error"));
 
 discord.on('message', msg => {
     let cmd = msg.content.split(/ +/);
-    if(cmd[0] === "!shipey") {
+    if(cmd[0] === "!shipey" || cmd[0] === "!weapey") {
+        let showWeapons = cmd[0] === "!weapey";
         if(cmd.length < 2) {
-            msg.channel.send("Usage: !shipey [color] <shipey | pastebin url | gist url>");
+            msg.channel.send("Usage: <!shipey|!weapey> [color] <shipey | pastebin url | gist url>");
             return;
         }
 
@@ -32,9 +33,9 @@ discord.on('message', msg => {
             cmd.splice(1, 1);
         }
         if(cmd[1].startsWith("http")) {
-            getHttp(cmd[1], (shipey) => sendShipey(msg.channel, shipey, color));
+            getHttp(cmd[1], (shipey) => sendShipey(msg.channel, shipey, color, showWeapons));
         } else {
-            sendShipey(msg.channel, cmd[1], color);
+            sendShipey(msg.channel, cmd[1], color, showWeapons);
         }
     }
 });
@@ -48,7 +49,7 @@ var hexToRgb = (hex) => {
     ] : null;
 }
 
-var sendShipey = (channel, shipey, color) => {
+var sendShipey = (channel, shipey, color, showWeapons = false) => {
     try {
         var spec = JSON.parse(atob(shipey.slice(4)));
     } catch(e) {
@@ -141,7 +142,7 @@ var sendShipey = (channel, shipey, color) => {
 
     channel.send({file: img}).then(() => {
         channel.send({embed: shipEmbed});
-        if(weapEmbed.fields.length > 0)
+        if(showWeapons && weapEmbed.fields.length > 0)
             channel.send({embed: weapEmbed});
     });
 }

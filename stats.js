@@ -104,6 +104,8 @@ var getStats = module.exports.getStats = (spec) => {
         }
     }
 
+    stats.dps = 0;
+    stats.damage = 0;
     stats.range = 0;
     stats.fireEnergy = 0;
 

@@ -19,11 +19,30 @@ discord.on('error', e => console.error("Discord error"));
 
 discord.on('message', msg => {
     let cmd = msg.content.split(/ +/);
-    if(cmd[0] === "!shipey" || cmd[0] === "!weapey") {
-        let showWeapons = cmd[0] === "!weapey";
+    if(cmd[0] === "!shipey") {
         if(cmd.length < 2) {
-            msg.channel.send("Usage: <!shipey|!weapey> [color] <shipey | pastebin url | gist url>");
+            msg.channel.send("Usage: !shipey [<+|-><s|a|w> [color] <shipey | pastebin url | gist url>");
             return;
+        }
+
+        let showing = {stats: true, weapons: false, ais: false};
+
+        while(/^[+-]/.test(cmd[1])) {
+            let show = cmd[1].startsWith("+");
+            for(let n of cmd[1].slice(1)) {
+                switch(n) {
+                    case "s":
+                        showing.ship = show;
+                        break;
+                    case "a":
+                        showing.ais = show;
+                        break;
+                    case "w":
+                        showing.weapons = show;
+                        break;
+                }
+            }
+            cmd.splice(1, 1);
         }
 
         if(cmd.length > 2) {
@@ -33,9 +52,9 @@ discord.on('message', msg => {
             cmd.splice(1, 1);
         }
         if(cmd[1].startsWith("http")) {
-            getHttp(cmd[1], (shipey) => sendShipey(msg.channel, shipey, color, showWeapons));
+            getHttp(cmd[1], (shipey) => sendShipey(msg.channel, shipey, color, showing));
         } else {
-            sendShipey(msg.channel, cmd[1], color, showWeapons);
+            sendShipey(msg.channel, cmd[1], color, showing);
         }
     }
 });
@@ -49,7 +68,7 @@ var hexToRgb = (hex) => {
     ] : null;
 }
 
-var sendShipey = (channel, shipey, color, showWeapons = false) => {
+var sendShipey = (channel, shipey, color, showing) => {
     try {
         var spec = JSON.parse(atob(shipey.slice(4)));
     } catch(e) {
@@ -57,7 +76,7 @@ var sendShipey = (channel, shipey, color, showWeapons = false) => {
         return;
     }
 
-    let displays = [
+    let shipDisplays = [
         {name: "Name", field: "name", unit: "", fixed: 0},
         {name: "Cost", field: "cost", unit: "", fixed: 0},
         {name: "HP", field: "hp", unit: "", fixed: 0},
@@ -95,7 +114,7 @@ var sendShipey = (channel, shipey, color, showWeapons = false) => {
     let stats = getStats(spec);
 
     let shipEmbed = new Discord.RichEmbed().setTitle("Stats").setColor(color);
-    for(let d of displays) {
+    for(let d of shipDisplays) {
         if(shipEmbed.fields.length >= 24) {
             shipEmbed.addField("More", "...", false);
             break;
@@ -107,6 +126,18 @@ var sendShipey = (channel, shipey, color, showWeapons = false) => {
             shipEmbed.addField(d.name, v + d.unit, true);
         }
     }
+
+    let msg = "";
+    let aiEmbed = new Discord.RichEmbed().setColor(color);
+    for(let i = 0; i < Math.min(stats.ais.length, 50); i++) {
+        let ais = stats.ais[i];
+        let text = ais.shift();
+        while(/(#|@\S+)/.test(text)) {
+            text = text.replace(/(#|@\S+)/, "`" + ais.shift() + "`");
+        }
+        msg += text + "\n";
+    }
+    aiEmbed.addField("**AI Rules**", msg, false);
 
     let msgs = [];
     for(let i in stats.weapons) {
@@ -139,12 +170,18 @@ var sendShipey = (channel, shipey, color, showWeapons = false) => {
     }
 
     let img = drawShip(spec, stats, color);
+    let embeds = []
+    if(showing.ship) embeds.push(shipEmbed);
+    if(showing.ais) embeds.push(aiEmbed);
+    if(showing.weapons) embeds.push(weapEmbed);
 
-    channel.send({file: img}).then(() => {
-        channel.send({embed: shipEmbed});
-        if(showWeapons && weapEmbed.fields.length > 0)
-            channel.send({embed: weapEmbed});
-    });
+    let sendNext = () => {
+        if(embeds.length > 0) {
+            channel.send({embed: embeds.shift()}).then(sendNext);
+        }
+    };
+
+    channel.send({file: img}).then(sendNext);
 }
 
 var getHttp = (url, cb) => {

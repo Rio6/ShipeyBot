@@ -14,14 +14,15 @@ var getStats = module.exports.getStats = (spec) => {
         jumpCount: 0,
         center: [0, 0],
         radius: 0,
-        dps: 0,
-        damage: 0,
-        range: 0,
+        //dps: 0,
+        //damage: 0,
+        //range: 0,
         moveEnergy: 0,
-        fireEnergy: 0,
+        //fireEnergy: 0,
         otherEnergy: 0,
         allEnergy: 0,
-        weapons: []
+        weapons: [],
+        //ais: []
     };
 
     let ix = 0
@@ -140,5 +141,28 @@ var getStats = module.exports.getStats = (spec) => {
     stats.otherEnergy *= 16;
     stats.allEnergy = stats.fireEnergy + stats.moveEnergy;// + stats.otherEnergy;
 
+    let buildRules = [
+        "Field # at start",
+        "Field # at priority #",
+        "Try to field # every # seconds",
+        "Field # for # of enemy @unitTypes at priority #",
+        "Field # for # of ship in slot # at priority #",
+        "Field # for # of @needTypes at priority #",
+        "Field # when money over # at priority #",
+    ];
+    stats.ais = [];
+    for(let ais of spec.aiRules) {
+        if(!(ais[0] in buildRules)) {
+            stats.ais.push(ais);
+        }
+    }
+    for(let ai of spec.aiRules) {
+        if(ai[0] in buildRules) {
+            stats.ais.push(ais);
+        }
+    }
+
     return stats;
 }
+
+//console.log(getStats(JSON.parse(process.argv[2])));

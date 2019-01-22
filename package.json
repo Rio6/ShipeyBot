@@ -2,9 +2,9 @@
     "name": "Shipey",
     "version": "0.1.0",
     "description": "Shipey",
-    "main": "index.js",
+    "main": "app.js",
     "scripts": {
-        "start": "node index.js",
+        "start": "node app.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Rio",

@@ -21,7 +21,7 @@ discord.on('message', msg => {
     let cmd = msg.content.split(/ +/);
     if(cmd[0] === "!shipey") {
         if(cmd.length < 2) {
-            msg.channel.send("Usage: !shipey [<+|-><s|a|w> [color] <shipey | pastebin url | gist url>");
+            msg.channel.send("Usage: !shipey [<+|-><s|a|w>] [color] <shipey | pastebin url | gist url>");
             return;
         }
 

@@ -152,12 +152,12 @@ var getStats = module.exports.getStats = (spec) => {
     ];
     stats.ais = [];
     for(let ais of spec.aiRules) {
-        if(!(ais[0] in buildRules)) {
+        if(!buildRules.includes(ais[0])) {
             stats.ais.push(ais);
         }
     }
-    for(let ai of spec.aiRules) {
-        if(ai[0] in buildRules) {
+    for(let ais of spec.aiRules) {
+        if(buildRules.includes(ais[0])) {
             stats.ais.push(ais);
         }
     }

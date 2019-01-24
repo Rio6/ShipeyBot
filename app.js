@@ -128,7 +128,7 @@ var sendShipey = (channel, shipey, color, showing) => {
     }
 
     let msg = "";
-    let aiEmbed = new Discord.RichEmbed().setColor(color);
+    let aiEmbed = new Discord.RichEmbed().setTitle("AI Rules").setColor(color);
     for(let i = 0; i < Math.min(stats.ais.length, 50); i++) {
         let ais = stats.ais[i];
         let text = ais.shift();
@@ -137,7 +137,8 @@ var sendShipey = (channel, shipey, color, showing) => {
         }
         msg += text + "\n";
     }
-    aiEmbed.addField("**AI Rules**", msg, false);
+    if(msg)
+        aiEmbed.setDescription(msg);
 
     let msgs = [];
     for(let i in stats.weapons) {

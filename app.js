@@ -32,7 +32,7 @@ discord.on('message', msg => {
             for(let n of cmd[1].slice(1)) {
                 switch(n) {
                     case "s":
-                        showing.ship = show;
+                        showing.stats = show;
                         break;
                     case "a":
                         showing.ais = show;
@@ -172,7 +172,7 @@ var sendShipey = (channel, shipey, color, showing) => {
 
     let img = drawShip(spec, stats, color);
     let embeds = []
-    if(showing.ship) embeds.push(shipEmbed);
+    if(showing.stats) embeds.push(shipEmbed);
     if(showing.ais) embeds.push(aiEmbed);
     if(showing.weapons) embeds.push(weapEmbed);
 

@@ -21,8 +21,8 @@ discord.on('message', msg => {
     let cmd = msg.content.split(/ +/);
     if(cmd[0] === "!shipey") {
         if(cmd.length < 2) {
-            msg.channel.send("Usage: !shipey [<+|-><s|a|w>] [color] <shipey | pastebin url | gist url>");
-            return;
+            msg.channel.send("```markdown\nUsage: !shipey +[show] -[noshow] [color] shipey\nwhere <show> and <noshow> can be one of these:\n- s: general stats\n- a: ai rules\n- w: weapon stats\n`color` can be one of the CSS colors or a hex code like `yellow` or `#ffdd00`\n`shipey` can be the shipey string you get from the share menu, a pastebin url, a gist url, or any raw url\n[Example](load shipey code from the url and show weapon stats, hiding general stats)\n> !shipey +w -s #505050 https://pastebin.com/W1vySkC8\n```\n")
+           return;
         }
 
         let showing = {stats: true, weapons: false, ais: false};

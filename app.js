@@ -105,7 +105,7 @@ var sendShipey = (channel, shipey, color, showing) => {
         {name: "E-Drain", field: "energyDamage", unit: "e", fixed: 1},
         {name: "Range", field: "range", unit: "m", fixed: 1},
         {name: "Speed", field: "bulletSpeed", unit: "m/s", fixed: 1},
-        {name: "Reload", field: "repladTime", unit: "s", fixed: 1},
+        {name: "Reload", field: "reloadTime", unit: "s", fixed: 1},
         {name: "Arc", field: "arc", unit: "°", fixed: 0},
         {name: "E-Use", field: "shotEnergy", unit: "e", fixed: 0},
         {name: "EPS", field: "fireEnergy", unit: "e/s", fixed: 1}

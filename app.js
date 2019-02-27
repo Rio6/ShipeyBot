@@ -113,21 +113,19 @@ var sendShipey = (channel, shipey, color, showing) => {
 
     let stats = getStats(spec);
 
+    let msg = "";
     let shipEmbed = new Discord.RichEmbed().setTitle("Stats").setColor(color);
     for(let d of shipDisplays) {
-        if(shipEmbed.fields.length >= 24) {
-            shipEmbed.addField("More", "...", false);
-            break;
-        }
-
         let v = stats[d.field];
         if(typeof v === "number") v = v.toFixed(d.fixed);
         if(v && stats[d.field] !== 0) {
-            shipEmbed.addField(d.name, v + d.unit, true);
+            msg += "**" + d.name + "**: " + v + d.unit + "\n";
         }
     }
+    if(msg)
+        shipEmbed.setDescription(msg);
 
-    let msg = "";
+    msg = "";
     let aiEmbed = new Discord.RichEmbed().setTitle("AI Rules").setColor(color);
     for(let i = 0; i < Math.min(stats.ais.length, 50); i++) {
         let ais = stats.ais[i];

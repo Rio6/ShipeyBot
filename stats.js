@@ -120,7 +120,7 @@ var getStats = module.exports.getStats = (spec) => {
         w.reloadTime *= w.weaponReload;
         w.shotEnergy *= w.weaponEnergy;
 
-        w.reloadTime /= 16
+        w.reloadTime = Math.ceil(w.reloadTime) / 16
         w.bulletSpeed *= 16
 
         w.fireEnergy = w.shotEnergy / w.reloadTime

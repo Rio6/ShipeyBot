@@ -63,11 +63,34 @@ var drawPart = (name, x, y, dir, color) => {
 }
 
 var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 255]) => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+
+    // Scale canvas when ship's too big
+    let maxSize = minSize = 20*24/2;
+    for(let p of spec.parts) {
+        for(let i = 0; i <= 1; i++) {
+            let s = Math.abs(p.pos[i]) + parts[p.type].size[i];
+            if(s > maxSize) {
+                maxSize = s;
+            }
+        }
+    }
+
+    let scale = maxSize / minSize;
+    let translation = [canvas.width * scale / 2 - minSize, canvas.height * scale / 2 - minSize];
+    let rect = [0, 0, canvas.width, canvas.height];
+    if(scale > 1) {
+        rect = [-translation[0], -translation[1], scale * canvas.width, scale * canvas.height];
+        ctx.scale(1/scale, 1/scale);
+        ctx.translate(...translation);
+    }
+
+    ctx.clearRect(...rect);
 
     ctx.globalCompositeOperation = "source-over";
     ctx.fillStyle = "#73C1E2";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(...rect);
 
     ctx.translate(MARGIN / 2, MARGIN / 2);
     ctx.globalCompositeOperation = "multiply";
@@ -82,7 +105,17 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
     ctx.globalCompositeOperation = "source-over";
 
     if(stats.shield > 0) {
-        let r = stats.radius + 40;
+
+        let r = stats.radius;
+        if(scale > 1) { // big ship
+            for(let part of spec.parts) {
+                let d = Math.sqrt((part.pos[0] - stats.center[0])**2 + (part.pos[1] - stats.center[1])**2);
+                if(d > r) r = d;
+            }
+        }
+
+        r += 40;
+
         let x = NxN / 2 * SIZE + stats.center[0] - r;
         let y = NxN / 2 * SIZE - stats.center[1] - r;
         drawImage("img/point02.png", x, y, r * 2, r * 2, 0, false, color, "color");
@@ -92,7 +125,7 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
         drawPart(part.type, part.pos[0], part.pos[1], part.dir, color);
     }
 
-    ctx.translate(-MARGIN / 2, -MARGIN / 2);
+    ctx.restore();
 
     //require("child_process").spawn("firefox", [canvas.toDataURL()]);
     return canvas.toBuffer("image/png");

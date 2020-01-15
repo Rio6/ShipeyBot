@@ -11,8 +11,8 @@
     "dependencies": {
         "atob": "^2.1.2",
         "canvas": "^2.2.0",
-        "css-color-names": "^1.0.0",
-        "discord.js": "^11.4.2",
-        "follow-redirects": "^1.6.1"
+        "css-color-names": "^1.0.1",
+        "discord.js": "^11.5.1",
+        "follow-redirects": "^1.9.0"
     }
 }

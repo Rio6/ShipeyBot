@@ -67,7 +67,7 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
     ctx.save();
 
     // Scale canvas when ship's too big
-    let maxSize = minSize = 20*24/2;
+    let maxSize = minSize = NxN * SIZE / 2;
     for(let p of spec.parts) {
         for(let i = 0; i <= 1; i++) {
             let s = Math.abs(p.pos[i]) + parts[p.type].size[i];
@@ -78,7 +78,7 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
     }
 
     let scale = maxSize / minSize;
-    let translation = [canvas.width * scale / 2 - minSize, canvas.height * scale / 2 - minSize];
+    let translation = [(canvas.width * scale - MARGIN) / 2 - minSize, (canvas.height * scale - MARGIN) / 2 - minSize];
     let rect = [0, 0, canvas.width, canvas.height];
     if(scale > 1) {
         rect = [-translation[0], -translation[1], scale * canvas.width, scale * canvas.height];

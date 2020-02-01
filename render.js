@@ -21,14 +21,16 @@ var drawImage = (file, x, y, w = SIZE, h = SIZE, dir = 0, flip = false, color, c
 
     let img = getImage(file, flip, color, colorMode);
 
-    ctx.save();
-    ctx.translate(x + w / 2, y + h / 2);
-    ctx.rotate(-dir * Math.PI / 2);
-    ctx.translate(-x - w / 2, -y - h / 2);
+    if(img != null) {
+        ctx.save();
+        ctx.translate(x + w / 2, y + h / 2);
+        ctx.rotate(-dir * Math.PI / 2);
+        ctx.translate(-x - w / 2, -y - h / 2);
 
-    ctx.drawImage(img, x, y, w, h);
+        ctx.drawImage(img, x, y, w, h);
 
-    ctx.restore();
+        ctx.restore();
+    }
 }
 
 var drawPart = (name, x, y, dir, color) => {
@@ -135,7 +137,7 @@ var getImage = (file, flip = false, color, colorMode) => {
 
     if(!mappings[file]) {
         console.log("not in mappings", file);
-        return;
+        return null;
     }
 
     let uv = mappings[file].uv;

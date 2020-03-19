@@ -48,9 +48,13 @@ var drawPart = (name, x, y, dir, color) => {
         wt *= 2.3;
         ht *= 2.3;
     }
+
     let xt = NxN / 2 * SIZE + x - wt / 2;
     let yt = NxN / 2 * SIZE - y - ht / 2;
     let flip = x < 0 && !name.includes("Letter") && !name.includes("Mod");
+
+    if(parts[name].northWest && dir % 2 !== 0)
+        file = file.replace("N", "W")
 
     let mode = null;
     if(isDecal(name))

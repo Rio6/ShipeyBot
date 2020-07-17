@@ -12,7 +12,7 @@
         "atob": "^2.1.2",
         "canvas": "^2.2.0",
         "css-color-names": "^1.0.1",
-        "discord.js": "^11.6.4",
+        "discord.js": "^12.2.0",
         "follow-redirects": "^1.11.0"
     }
 }

@@ -114,7 +114,7 @@ var sendShipey = (channel, shipey, color, showing) => {
     let stats = getStats(spec);
 
     let msg = "";
-    let shipEmbed = new Discord.RichEmbed().setTitle("Stats").setColor(color);
+    let shipEmbed = new Discord.MessageEmbed().setTitle("Stats").setColor(color);
     for(let d of shipDisplays) {
         let v = stats[d.field];
         if(typeof v === "number") v = v.toFixed(d.fixed);
@@ -126,7 +126,7 @@ var sendShipey = (channel, shipey, color, showing) => {
         shipEmbed.setDescription(msg);
 
     msg = "";
-    let aiEmbed = new Discord.RichEmbed().setTitle("AI Rules").setColor(color);
+    let aiEmbed = new Discord.MessageEmbed().setTitle("AI Rules").setColor(color);
     for(let i = 0; i < Math.min(stats.ais.length, 50); i++) {
         let ais = stats.ais[i];
         let text = ais.shift();
@@ -158,7 +158,7 @@ var sendShipey = (channel, shipey, color, showing) => {
             added[0].count += 1;
     }
 
-    let weapEmbed = new Discord.RichEmbed().setTitle("Weapons").setColor(color);
+    let weapEmbed = new Discord.MessageEmbed().setTitle("Weapons").setColor(color);
     for(let msg of msgs) {
         if(weapEmbed.fields.length >= 24) {
             weapEmbed.addField("More", "...", false);
@@ -180,7 +180,7 @@ var sendShipey = (channel, shipey, color, showing) => {
         }
     };
 
-    channel.send({file: img}).then(sendNext);
+    channel.send({files: [img]}).then(sendNext);
 }
 
 var getHttp = (url, cb) => {

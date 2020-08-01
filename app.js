@@ -6,6 +6,21 @@ const {drawShip} = require('./render.js');
 const {getStats} = require('./stats.js');
 const {token} = require('./token.json');
 
+const helpMsg = `
+\`\`\`markdown
+Usage: !shipey +[show] -[noshow] [color] [shipey]
+where <show> and <noshow> can be one of these:
+- s: general stats
+- a: ai rules
+- w: weapon stats
+<color> can be one of the CSS colors or a hex code like \`yellow\` or \`#ffdd00\`
+<shipey> can be the shipey string you get from the share menu, a pastebin url, a gist url, or any raw url
+Alternatively, include the shipey string in an attachment, shipey bot will use it if no url is provided
+[Example](load shipey code from the url and show weapon stats, hiding general stats)
+> !shipey +w -s #505050 https://pastebin.com/W1vySkC8
+\`\`\`
+`;
+
 var discord = new Discord.Client();
 discord.on('ready', () => {
     console.log(`${discord.user.tag}` + " ready");
@@ -18,11 +33,18 @@ discord.on('disconnect', () => {
 discord.on('error', e => console.error("Discord error"));
 
 discord.on('message', msg => {
+
     let cmd = msg.content.split(/ +/);
     if(cmd[0] === "!shipey") {
+
+        let attach = msg.attachments.first();
+        if(attach) {
+            cmd.push(attach.url);
+        }
+
         if(cmd.length < 2) {
-            msg.channel.send("```markdown\nUsage: !shipey +[show] -[noshow] [color] shipey\nwhere <show> and <noshow> can be one of these:\n- s: general stats\n- a: ai rules\n- w: weapon stats\n`color` can be one of the CSS colors or a hex code like `yellow` or `#ffdd00`\n`shipey` can be the shipey string you get from the share menu, a pastebin url, a gist url, or any raw url\n[Example](load shipey code from the url and show weapon stats, hiding general stats)\n> !shipey +w -s #505050 https://pastebin.com/W1vySkC8\n```\n")
-           return;
+            msg.channel.send(helpMsg)
+            return;
         }
 
         let showing = {stats: true, weapons: false, ais: false};

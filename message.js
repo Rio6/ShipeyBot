@@ -11,12 +11,12 @@ let channelName = process.argv[3];
 let message = process.argv[4];
 
 let discord = new Discord.Client();
-discord.on('ready', () => {
-    for(let [_, server] of discord.guilds) {
+discord.on('ready', async () => {
+    for(let [_, server] of discord.guilds.cache) {
         if(server.name === serverName) {
-            for(let [_, channel] of server.channels) {
+            for(let [_, channel] of server.channels.cache) {
                 if(channel.type === "text" && channel.name === channelName) {
-                    channel.send(message).catch(console.error);
+                    await channel.send(message).catch(console.error);
                 }
             }
         }

@@ -25,8 +25,9 @@ var getStats = module.exports.getStats = (spec) => {
         //ais: []
     };
 
-    let ix = 0
-    let iy = 0
+    let ix = 0;
+    let iy = 0;
+    let totalArea = 0;
     for(let p of spec.parts) {
         let data = parts[p.type];
         if(!data) continue;
@@ -63,12 +64,16 @@ var getStats = module.exports.getStats = (spec) => {
             stats.otherEnergy += data.useEnergy;
         }
 
-        ix += data.mass * p.pos[0];
-        iy += data.mass * p.pos[1];
+        if(data.mass > 0 && !data.weapon) {
+            let partArea = data.size[0] * data.size[1];
+            ix += partArea * p.pos[0];
+            iy += partArea * p.pos[1];
+            totalArea += partArea;
+        }
     }
 
-    if(stats.mass > 0) {
-        stats.center = [ix / stats.mass, iy / stats.mass];
+    if(totalArea > 0) {
+        stats.center = [ix / totalArea, iy / totalArea];
     }
 
     for(let part of spec.parts) {

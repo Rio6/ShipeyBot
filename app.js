@@ -34,6 +34,9 @@ discord.on('error', e => console.error("Discord error"));
 
 discord.on('message', msg => {
 
+    if(process.env.DEV && msg.author.tag !== 'R26#3534')
+        return;
+
     let cmd = msg.content.split(/ +/);
     if(cmd[0] === "!shipey") {
 

@@ -138,7 +138,7 @@ var getStats = module.exports.getStats = (spec) => {
     }
 
     stats.speed = (stats.thrust / stats.mass * 9 * 16);
-    stats.jumpDistance = (Math.min(1, 41 * stats.jumpCount / stats.mass) * 500);
+    stats.jumpDistance = (Math.min(1, 41 * stats.jumpCount / stats.mass) * 600);
     stats.turnSpeed = stats.turnSpeed / stats.mass * 16 * 180 / Math.PI;
     stats.genEnergy *= 16;
     stats.genShield *= 16;

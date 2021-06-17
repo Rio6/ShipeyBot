@@ -77,11 +77,24 @@ discord.on('message', msg => {
             cmd.splice(1, 1);
         }
         if(cmd[1].startsWith("http")) {
-            getHttp(cmd[1], (shipey) => sendShipey(msg.channel, shipey, color, showing));
+            getHttp(cmd[1], (shipey) => sendShipey(msg, shipey, color, showing));
         } else {
-            sendShipey(msg.channel, cmd[1], color, showing);
+            sendShipey(msg, cmd[1], color, showing);
         }
     }
+});
+
+discord.on('messageDelete', msg => {
+
+    if(process.env.DEV && msg.author.tag !== 'R26#3534')
+        return;
+
+    msg.channel.messages.fetch({ after: msg.id, limit: 20 }).then(shipeyMsgs => {
+        shipeyMsgs
+            .filter(shipeyMsg => shipeyMsg.author.id === discord.user.id)
+            .filter(shipeyMsg => shipeyMsg.embeds[0]?.footer?.text === msg.id || shipeyMsg.attachments.first()?.name.startsWith(msg.id) === true)
+            .forEach(shipeyMsg => shipeyMsg.delete());
+    });
 });
 
 var hexToRgb = (hex) => {
@@ -93,11 +106,11 @@ var hexToRgb = (hex) => {
     ] : null;
 }
 
-var sendShipey = (channel, shipey, color, showing) => {
+var sendShipey = (msg, shipey, color, showing) => {
     try {
         var spec = JSON.parse(atob(shipey.slice(4)));
     } catch(e) {
-        channel.send("Error parsing shipey");
+        msg.channel.send("Error parsing shipey");
         return;
     }
 
@@ -138,59 +151,59 @@ var sendShipey = (channel, shipey, color, showing) => {
 
     let stats = getStats(spec);
 
-    let msg = "";
-    let shipEmbed = new Discord.MessageEmbed().setTitle("Stats").setColor(color);
+    let content = '';
+    let shipEmbed = new Discord.MessageEmbed().setTitle("Stats");
     for(let d of shipDisplays) {
         let v = stats[d.field];
         if(typeof v === "number") v = v.toFixed(d.fixed);
         if(v && stats[d.field] !== 0) {
-            msg += "**" + d.name + "**: " + v + d.unit + "\n";
+            content += "**" + d.name + "**: " + v + d.unit + "\n";
         }
     }
-    if(msg)
-        shipEmbed.setDescription(msg);
+    if(content)
+        shipEmbed.setDescription(content);
 
-    msg = "";
-    let aiEmbed = new Discord.MessageEmbed().setTitle("AI Rules").setColor(color);
+    content = '';
+    let aiEmbed = new Discord.MessageEmbed().setTitle("AI Rules");
     for(let i = 0; i < Math.min(stats.ais.length, 50); i++) {
         let ais = stats.ais[i];
         let text = ais.shift();
         while(/(#|@\S+)/.test(text)) {
             text = text.replace(/(#|@\S+)/, "`" + ais.shift() + "`");
         }
-        msg += text + "\n";
+        content += text + "\n";
     }
-    if(msg)
-        aiEmbed.setDescription(msg);
+    if(content)
+        aiEmbed.setDescription(content);
 
-    let msgs = [];
+    let contents = [];
     for(let i in stats.weapons) {
-        let msg = "";
+        let content = '';
         let w = stats.weapons[i];
 
         for(let d of weapDisplays) {
             let v = w[d.field];
             if(v && w[d.field] !== 0) {
                 if(typeof v === "number") v = v.toFixed(d.fixed);
-                msg += "**" + d.name + "**: " + v + d.unit + "\n";
+                content += "**" + d.name + "**: " + v + d.unit + "\n";
             }
         }
 
-        let added = msgs.filter(m => m.title === w.name && m.text === msg);
+        let added = contents.filter(m => m.title === w.name && m.text === content);
         if(added.length <= 0)
-            msgs.push({title: w.name, text: msg, count: 1});
+            contents.push({title: w.name, text: content, count: 1});
         else
             added[0].count += 1;
     }
 
-    let weapEmbed = new Discord.MessageEmbed().setTitle("Weapons").setColor(color);
-    for(let msg of msgs) {
+    let weapEmbed = new Discord.MessageEmbed().setTitle("Weapons");
+    for(let content of contents) {
         if(weapEmbed.fields.length >= 24) {
             weapEmbed.addField("More", "...", false);
             break;
         }
 
-        weapEmbed.addField(msg.title + " x" + msg.count, msg.text, true);
+        weapEmbed.addField(content.title + " x" + content.count, content.text, true);
     }
 
     let img = drawShip(spec, stats, color);
@@ -199,13 +212,20 @@ var sendShipey = (channel, shipey, color, showing) => {
     if(showing.ais) embeds.push(aiEmbed);
     if(showing.weapons) embeds.push(weapEmbed);
 
+    for(const embed of embeds) {
+        embed.setColor(color).setFooter(msg.id);
+    }
+
     let sendNext = () => {
         if(embeds.length > 0) {
-            channel.send({embed: embeds.shift()}).then(sendNext);
+            msg.channel.send({embed: embeds.shift()}).then(sendNext);
         }
     };
 
-    channel.send({files: [img]}).then(sendNext);
+    msg.channel.send({files: [{
+        attachment: img,
+        name: `${msg.id}.png`,
+    }]}).then(sendNext);
 }
 
 var getHttp = (url, cb) => {

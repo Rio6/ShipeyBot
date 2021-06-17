@@ -92,7 +92,13 @@ discord.on('messageDelete', msg => {
     msg.channel.messages.fetch({ after: msg.id, limit: 20 }).then(shipeyMsgs => {
         shipeyMsgs
             .filter(shipeyMsg => shipeyMsg.author.id === discord.user.id)
-            .filter(shipeyMsg => shipeyMsg.embeds[0]?.footer?.text === msg.id || shipeyMsg.attachments.first()?.name.startsWith(msg.id) === true)
+            .filter(shipeyMsg => {
+                if(shipeyMsg.embeds[0] && shipeyMsg.embeds[0].footer)
+                    return shipeyMsg.embeds[0].footer.text === msg.id;
+                if(shipeyMsg.attachments.first())
+                    return shipeyMsg.attachments.first().name.startsWith(msg.id) === true;
+                return false;
+            })
             .forEach(shipeyMsg => shipeyMsg.delete());
     });
 });

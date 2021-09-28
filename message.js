@@ -1,27 +1,18 @@
 const Discord = require('discord.js');
 const {token} = require('./token.json');
 
-if(process.argv.length < 5) {
-    console.error("server channel message");
+if(process.argv.length < 4) {
+    console.error("<channel-id> message");
     process.exit(1);
 }
 
-let serverName = process.argv[2];
-let channelName = process.argv[3];
-let message = process.argv[4];
+let channelId = process.argv[2];
+let message = process.argv.slice(3).join(' ');
 
 let discord = new Discord.Client();
 discord.on('ready', async () => {
-    for(let [_, server] of discord.guilds.cache) {
-        if(server.name === serverName) {
-            for(let [_, channel] of server.channels.cache) {
-                if(channel.type === "text" && channel.name === channelName) {
-                    await channel.send(message).catch(console.error);
-                }
-            }
-        }
-    }
-
+    const channel = await discord.channels.fetch(channelId);
+    await channel.send(message).catch(console.error);
     discord.destroy();
 });
 

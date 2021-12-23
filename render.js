@@ -8,14 +8,11 @@ const MARGIN = 80;
 
 var atlas = null;
 
-var canvas = Canvas.createCanvas(NxN * SIZE + MARGIN, NxN * SIZE + MARGIN);
-var ctx = canvas.getContext('2d');
-
 Canvas.loadImage("atlas.png").then((image) => atlas = image);
 
-var drawImage = (file, x, y, w = SIZE, h = SIZE, dir = 0, flip = false, color, colorMode) => {
+var drawImage = (ctx, file, x, y, w = SIZE, h = SIZE, dir = 0, flip = false, color, colorMode) => {
     if(!atlas) {
-        console.log("Not ready");
+        //console.log("Not ready");
         return;
     }
 
@@ -33,9 +30,9 @@ var drawImage = (file, x, y, w = SIZE, h = SIZE, dir = 0, flip = false, color, c
     }
 }
 
-var drawPart = (name, x, y, dir, color) => {
+var drawPart = (ctx, name, x, y, dir, color) => {
     if(!parts[name]) {
-        console.log("Unknown part", name);
+        //console.log("Unknown part", name);
         return;
     }
 
@@ -62,15 +59,15 @@ var drawPart = (name, x, y, dir, color) => {
     else if(hasColor(name))
         mode = "replace";
 
-    drawImage(file, xt, yt, wt, ht, dir, flip, color, mode);
+    drawImage(ctx, file, xt, yt, wt, ht, dir, flip, color, mode);
 
     if(name === "JumpEngine")
-        drawImage("parts/engineJumpPip.png", xt, yt, wt, ht, -dir * Math.PI / 2, flip);
+        drawImage(ctx, "parts/engineJumpPip.png", xt, yt, wt, ht, -dir * Math.PI / 2, flip);
 }
 
 var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 255]) => {
-
-    ctx.save();
+    let canvas = Canvas.createCanvas(NxN * SIZE + MARGIN, NxN * SIZE + MARGIN);
+    let ctx = canvas.getContext('2d');
 
     // Scale canvas when ship's too big
     let maxSize = minSize = NxN * SIZE / 2;
@@ -104,7 +101,7 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
         for(let j = 0; j < NxN; j++) {
             let size = SIZE * .8;
             let offset = SIZE * .1;
-            drawImage("parts/sel1x1.png", i * SIZE + offset, j * SIZE + offset, size, size);
+            drawImage(ctx, "parts/sel1x1.png", i * SIZE + offset, j * SIZE + offset, size, size);
         }
     }
 
@@ -124,14 +121,12 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
 
         let x = NxN / 2 * SIZE + stats.center[0] - r;
         let y = NxN / 2 * SIZE - stats.center[1] - r;
-        drawImage("img/point02.png", x, y, r * 2, r * 2, 0, false, color, "color");
+        drawImage(ctx, "img/point02.png", x, y, r * 2, r * 2, 0, false, color, "color");
     }
 
     for(let part of spec.parts) {
-        drawPart(part.type, part.pos[0], part.pos[1], part.dir, color);
+        drawPart(ctx, part.type, part.pos[0], part.pos[1], part.dir, color);
     }
-
-    ctx.restore();
 
     //require("child_process").spawn("firefox", [canvas.toDataURL()]);
     return canvas.toBuffer("image/png");
@@ -140,7 +135,7 @@ var drawShip = module.exports.drawShip = (spec, stats, color = [255, 255, 255, 2
 var getImage = (file, flip = false, color, colorMode) => {
 
     if(!mappings[file]) {
-        console.log("not in mappings", file);
+        //console.log("not in mappings", file);
         return null;
     }
 

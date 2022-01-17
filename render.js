@@ -1,6 +1,7 @@
 const Canvas = require('canvas');
 const parts = require('./parts.json');
 const {size, mappings} = require('./atlas.json'), atlasSize = size;
+const {isDecal} = require('./stats.js');
 
 const NxN = 24;
 const SIZE = 20;
@@ -178,10 +179,6 @@ var getImage = (file, flip = false, color, colorMode) => {
         cCtx.putImageData(imageData, 0, 0);
     }
     return cCanvas;
-};
-
-var isDecal = (name) => {
-    return name.includes("Decal") || name.includes("Letter") || name.includes("Stripe");
 };
 
 var hasColor = (name) => {

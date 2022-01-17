@@ -1,5 +1,9 @@
 const parts = require('./parts.json');
 
+var isDecal = module.exports.isDecal = (name) => {
+    return name.includes("Decal") || name.includes("Letter") || name.includes("Stripe");
+};
+
 var getStats = module.exports.getStats = (spec) => {
     let stats = {
         hp: 5,
@@ -76,10 +80,12 @@ var getStats = module.exports.getStats = (spec) => {
         stats.center = [ix / totalArea, iy / totalArea];
     }
 
+    stats.radius = 0;
     for(let part of spec.parts) {
         let r = Math.sqrt((part.pos[0] - stats.center[0])**2 + (part.pos[1] - stats.center[1])**2);
-        if(r > stats.radius)
+        if(r > stats.radius && !isDecal(part.type)) {
             stats.radius = r;
+        }
     }
     if(stats.radius > 500)
         stats.radius = 500;

@@ -49,7 +49,7 @@ var drawPart = (ctx, name, x, y, dir, color) => {
 
     let xt = NxN / 2 * SIZE + x - wt / 2;
     let yt = NxN / 2 * SIZE - y - ht / 2;
-    let flip = x < 0 && !name.includes("Letter") && !name.includes("Mod");
+    let flip = x < 0 && parts[name].flip;
 
     if(parts[name].northWest && dir % 2 !== 0)
         file = file.replace("N", "W")

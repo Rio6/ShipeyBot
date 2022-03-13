@@ -5,7 +5,7 @@ JSON.stringify(Object.fromEntries(
         for(const k in part) {
             if(
                 typeof part[k] !== 'function' &&
-                !['pos', 'worldPos', 'flip', 'rot', 'dir'].includes(k)
+                !['pos', 'worldPos', 'rot', 'dir', 'desc'].includes(k)
             ) {
                 obj[k] = part[k];
             }

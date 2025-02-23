@@ -21,7 +21,7 @@ Alternatively, include the shipey string in an attachment, shipey bot will use i
 \`\`\`
 `;
 
-var discord = new Discord.Client({
+const discord = new Discord.Client({
     intents: [
         Discord.GatewayIntentBits.Guilds,
         Discord.GatewayIntentBits.GuildMessages,
@@ -33,6 +33,7 @@ var discord = new Discord.Client({
         Discord.Partials.Message
     ]
 });
+
 discord.on('ready', () => {
     console.log(`${discord.user.tag}` + " ready");
 });
@@ -41,7 +42,10 @@ discord.on('disconnect', () => {
     process.exit();
 });
 
-discord.on('error', e => console.error("Discord error"));
+discord.on('debug', console.info);
+discord.on('warn', console.warn);
+discord.on('error', console.error);
+discord.on('rateLimit', console.warn);
 
 discord.on('messageCreate', msg => {
     if(process.env.DEV && msg.author.tag !== 'r26')

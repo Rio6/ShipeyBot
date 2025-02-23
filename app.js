@@ -21,7 +21,18 @@ Alternatively, include the shipey string in an attachment, shipey bot will use i
 \`\`\`
 `;
 
-var discord = new Discord.Client();
+var discord = new Discord.Client({
+    intents: [
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.DirectMessages,
+        Discord.GatewayIntentBits.MessageContent,
+    ],
+    partials: [
+        Discord.Partials.Channel,
+        Discord.Partials.Message
+    ]
+});
 discord.on('ready', () => {
     console.log(`${discord.user.tag}` + " ready");
 });
@@ -32,9 +43,8 @@ discord.on('disconnect', () => {
 
 discord.on('error', e => console.error("Discord error"));
 
-discord.on('message', msg => {
-
-    if(process.env.DEV && msg.author.tag !== 'R26#3534')
+discord.on('messageCreate', msg => {
+    if(process.env.DEV && msg.author.tag !== 'r26')
         return;
 
     let cmd = msg.content.split(/\s+/);
@@ -86,7 +96,7 @@ discord.on('message', msg => {
 
 discord.on('messageDelete', msg => {
 
-    if(process.env.DEV && msg.author.tag !== 'R26#3534')
+    if(process.env.DEV && msg.author.tag !== 'r26')
         return;
 
     msg.channel.messages.fetch({ after: msg.id, limit: 20 }).then(shipeyMsgs => {
@@ -158,7 +168,7 @@ var sendShipey = (msg, shipey, color, showing) => {
     let stats = getStats(spec);
 
     let content = '';
-    let shipEmbed = new Discord.MessageEmbed().setTitle("Stats");
+    let shipEmbed = new Discord.EmbedBuilder().setTitle("Stats");
     for(let d of shipDisplays) {
         let v = stats[d.field];
         if(typeof v === "number") v = v.toFixed(d.fixed);
@@ -170,7 +180,7 @@ var sendShipey = (msg, shipey, color, showing) => {
         shipEmbed.setDescription(content);
 
     content = '';
-    let aiEmbed = new Discord.MessageEmbed().setTitle("AI Rules");
+    let aiEmbed = new Discord.EmbedBuilder().setTitle("AI Rules");
     for(let i = 0; i < Math.min(stats.ais.length, 50); i++) {
         let ais = stats.ais[i];
         let text = ais.shift();
@@ -202,14 +212,22 @@ var sendShipey = (msg, shipey, color, showing) => {
             added[0].count += 1;
     }
 
-    let weapEmbed = new Discord.MessageEmbed().setTitle("Weapons");
+    let weapEmbed = new Discord.EmbedBuilder().setTitle("Weapons");
     for(let content of contents) {
-        if(weapEmbed.fields.length >= 24) {
-            weapEmbed.addField("More", "...", false);
+        if(weapEmbed.length >= 24) {
+            weapEmbed.addFields({
+                name: "More",
+                value: "...",
+                inline: false,
+            });
             break;
         }
 
-        weapEmbed.addField(content.title + " x" + content.count, content.text, true);
+        weapEmbed.addFields({
+            name: content.title + " x" + content.count,
+            value: content.text,
+            inline: true,
+        });
     }
 
     let img = drawShip(spec, stats, color);
@@ -219,19 +237,15 @@ var sendShipey = (msg, shipey, color, showing) => {
     if(showing.weapons) embeds.push(weapEmbed);
 
     for(const embed of embeds) {
-        embed.setColor(color).setFooter(msg.id);
+        embed.setColor(color).setFooter({ text: msg.id });
     }
-
-    let sendNext = () => {
-        if(embeds.length > 0) {
-            msg.channel.send({embed: embeds.shift()}).then(sendNext);
-        }
-    };
 
     msg.channel.send({files: [{
         attachment: img,
         name: `${msg.id}.png`,
-    }]}).then(sendNext);
+    }]}).then(() => {
+        msg.channel.send({embeds: embeds});
+    });
 }
 
 var getHttp = (url, cb) => {

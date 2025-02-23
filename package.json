@@ -11,9 +11,9 @@
     "author": "Rio",
     "dependencies": {
         "atob": "^2.1.2",
-        "canvas": "^2.8.0",
+        "canvas": "^3.1.0",
         "css-color-names": "^1.0.1",
-        "discord.js": "^12.2.0",
+        "discord.js": "^14.18.0",
         "follow-redirects": "^1.11.0"
     }
 }

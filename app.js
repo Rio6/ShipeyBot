@@ -86,10 +86,9 @@ discord.on('messageCreate', msg => {
 
         if(cmd.length > 2) {
             var color = hexToRgb(colors[cmd[1]]) || hexToRgb(cmd[1]);
-            if(!color)
-                color = [255, 255, 255];
             cmd.splice(1, 1);
         }
+        if(!color) color = [255, 255, 255];
         if(cmd[1].startsWith("http")) {
             getHttp(cmd[1], (shipey) => sendShipey(msg, shipey, color, showing));
         } else {

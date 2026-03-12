@@ -34,7 +34,7 @@ const discord = new Discord.Client({
     ]
 });
 
-discord.on('ready', () => {
+discord.on('clientReady', () => {
     console.log(`${discord.user.tag}` + " ready");
 });
 
@@ -42,7 +42,7 @@ discord.on('disconnect', () => {
     process.exit();
 });
 
-discord.on('debug', console.info);
+//discord.on('debug', console.info);
 discord.on('warn', console.warn);
 discord.on('error', console.error);
 discord.on('rateLimit', console.warn);
